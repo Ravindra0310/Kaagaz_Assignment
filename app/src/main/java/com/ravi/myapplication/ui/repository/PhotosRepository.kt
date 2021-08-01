@@ -7,7 +7,7 @@ import java.sql.Timestamp
 import javax.inject.Inject
 
 class PhotosRepository @Inject constructor(
-    private val database: ImageDatabase
+    val database: ImageDatabase
 ) {
 
     private val dao = database.getImageDao()

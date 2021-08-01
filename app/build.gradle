@@ -5,6 +5,7 @@ plugins {
     id 'kotlin-kapt'
     id("androidx.navigation.safeargs.kotlin")
 }
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdk 30
@@ -70,7 +71,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutineVersion"
     //Room
-    implementation "androidx.room:room-runtime:$jetpack_version"
+    //noinspection GradleDependency
+    implementation "androidx.room:room-ktx:$jetpack_version"
     kapt "androidx.room:room-compiler:$jetpack_version"
     kapt "com.android.databinding:compiler:$jetpack_version"
     // Retrofit & OkHttp
@@ -86,6 +88,6 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     // Dagger Hilt
-    implementation 'com.google.dagger:hilt-android:2.38.1'
-    annotationProcessor 'com.google.dagger:hilt-compiler:2.38.1'
+    implementation "com.google.dagger:hilt-android:2.38.1"
+    kapt "com.google.dagger:hilt-compiler:2.38.1"
 }

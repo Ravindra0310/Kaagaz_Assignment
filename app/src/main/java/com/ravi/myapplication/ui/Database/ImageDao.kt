@@ -10,7 +10,7 @@ import androidx.room.Query
 interface ImageDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(imageEntity: ImageEntity)
+    fun insert(imageEntity: ImageEntity)
 
     @Query("select * from kaagaz_table")
     fun getTask(): LiveData<List<ImageEntity>>

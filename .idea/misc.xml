@@ -14,14 +14,18 @@
         <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/drawable-v24/ic_shutter_normal.xml" value="0.1" />
         <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/drawable-v24/ic_shutter_pressed.xml" value="0.1" />
         <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/drawable-v24/ic_switch.xml" value="0.1" />
+        <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.2046875" />
         <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/drawable/ic_baseline_camera_alt_24.xml" value="0.1" />
+        <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/layout/activity_album_image.xml" value="0.18854166666666666" />
         <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/layout/activity_home.xml" value="0.13949275362318841" />
         <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/layout/activity_home2.xml" value="0.2" />
         <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/layout/activity_main.xml" value="0.18614130434782608" />
         <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/layout/activity_splash_screen.xml" value="0.2" />
+        <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/layout/album_item.xml" value="0.18854166666666666" />
         <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/layout/fragment_camera.xml" value="0.18614130434782608" />
         <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/layout/fragment_gallery.xml" value="0.18614130434782608" />
         <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/layout/fragment_permission.xml" value="0.18614130434782608" />
+        <entry key="..\:/Users/Ravi/OneDrive/Desktop/assinments/Kaagaz_Assignment/app/src/main/res/layout/image_item.xml" value="0.18854166666666666" />
       </map>
     </option>
   </component>

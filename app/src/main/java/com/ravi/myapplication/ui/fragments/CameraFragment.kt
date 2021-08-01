@@ -1,5 +1,3 @@
-
-
 package com.ravi.myapplication.ui.fragments
 
 import android.annotation.SuppressLint
@@ -36,6 +34,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.Navigation
@@ -49,6 +49,8 @@ import com.ravi.myapplication.R
 import com.ravi.myapplication.ui.activity.KEY_EVENT_ACTION
 import com.ravi.myapplication.ui.activity.KEY_EVENT_EXTRA
 import com.ravi.myapplication.ui.activity.MainActivity
+import com.ravi.myapplication.ui.viewmodel.PhotosViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_camera.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,11 +68,12 @@ import kotlin.math.min
 
 typealias LumaListener = (luma: Double) -> Unit
 
-class CameraFragment : Fragment() {
 
+@AndroidEntryPoint
+class CameraFragment : Fragment() {
     private lateinit var outputDirectory: File
     private lateinit var broadcastManager: LocalBroadcastManager
-
+    private val viewModel: PhotosViewModel by viewModels()
     private var displayId: Int = -1
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null
@@ -79,7 +82,6 @@ class CameraFragment : Fragment() {
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
     private lateinit var windowManager: WindowManager
-
     private val displayManager by lazy {
         requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
     }
@@ -114,11 +116,7 @@ class CameraFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-
-        // Shut down our background executor
         cameraExecutor.shutdown()
-
-        // Unregister the broadcast receivers and listeners
         broadcastManager.unregisterReceiver(volumeDownReceiver)
         displayManager.unregisterDisplayListener(displayListener)
     }
@@ -150,6 +148,7 @@ class CameraFragment : Fragment() {
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // viewModel= ViewModelProviders.of(this).get(PhotosViewModel::class.java)
         cameraExecutor = Executors.newSingleThreadExecutor()
         broadcastManager = LocalBroadcastManager.getInstance(view.context)
         val filter = IntentFilter().apply { addAction(KEY_EVENT_ACTION) }
@@ -170,7 +169,6 @@ class CameraFragment : Fragment() {
         updateCameraSwitchButton()
     }
 
-
     private fun setUpCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener(Runnable {
@@ -185,44 +183,27 @@ class CameraFragment : Fragment() {
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
-
     private fun bindCameraUseCases() {
-
         // Get screen metrics used to setup camera for full screen resolution
         val metrics = windowManager.getCurrentWindowMetrics().bounds
         Log.d(TAG, "Screen metrics: ${metrics.width()} x ${metrics.height()}")
-
         val screenAspectRatio = aspectRatio(metrics.width(), metrics.height())
         Log.d(TAG, "Preview aspect ratio: $screenAspectRatio")
-
         val rotation = view_finder.display.rotation
-
-        // CameraProvider
         val cameraProvider = cameraProvider
             ?: throw IllegalStateException("Camera initialization failed.")
-
-        // CameraSelector
         val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-
         // Preview
         preview = Preview.Builder()
-            // We request aspect ratio but no resolution
             .setTargetAspectRatio(screenAspectRatio)
-            // Set initial target rotation
             .setTargetRotation(rotation)
             .build()
-
         // ImageCapture
         imageCapture = ImageCapture.Builder()
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-            // We request aspect ratio but no resolution to match preview config, but letting
-            // CameraX optimize for whatever specific resolution best fits our use cases
             .setTargetAspectRatio(screenAspectRatio)
-            // Set initial target rotation, we will have to call this again if rotation changes
-            // during the lifecycle of this use case
             .setTargetRotation(rotation)
             .build()
-
         // ImageAnalysis
         imageAnalyzer = ImageAnalysis.Builder()
             .setTargetAspectRatio(screenAspectRatio)
@@ -234,16 +215,15 @@ class CameraFragment : Fragment() {
                 })
             }
         cameraProvider.unbindAll()
-
         try {
             camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageCapture, imageAnalyzer)
+                this, cameraSelector, preview, imageCapture, imageAnalyzer
+            )
             preview?.setSurfaceProvider(view_finder.surfaceProvider)
         } catch (exc: Exception) {
             Log.e(TAG, "Use case binding failed", exc)
         }
     }
-
 
     private fun aspectRatio(width: Int, height: Int): Int {
         val previewRatio = max(width, height).toDouble() / min(width, height)
@@ -252,7 +232,6 @@ class CameraFragment : Fragment() {
         }
         return AspectRatio.RATIO_16_9
     }
-
 
     private fun updateCameraUi() {
         camera_ui_container.let {
@@ -265,12 +244,20 @@ class CameraFragment : Fragment() {
                 setGalleryThumbnail(Uri.fromFile(it))
             }
         }
-       camera_capture_button?.setOnClickListener {
+        camera_capture_button?.setOnClickListener {
             imageCapture?.let { imageCapture ->
                 val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
                 val metadata = Metadata().apply {
                     isReversedHorizontal = lensFacing == CameraSelector.LENS_FACING_FRONT
                 }
+
+                var albums = outputDirectory.name
+                var name = photoFile.name
+                var time = SimpleDateFormat(FILENAME, Locale.US)
+                    .format(System.currentTimeMillis())
+
+                viewModel.insertImageData(name,time,albums)
+
                 val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
                     .setMetadata(metadata)
                     .build()
@@ -279,6 +266,7 @@ class CameraFragment : Fragment() {
                         override fun onError(exc: ImageCaptureException) {
                             Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                         }
+
                         override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                             val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
                             Log.d(TAG, "Photo capture succeeded: $savedUri")
@@ -306,13 +294,14 @@ class CameraFragment : Fragment() {
                     camera_ui_container.postDelayed({
                         camera_ui_container.foreground = ColorDrawable(Color.WHITE)
                         camera_ui_container.postDelayed(
-                            { camera_ui_container.foreground = null }, ANIMATION_FAST_MILLIS)
+                            { camera_ui_container.foreground = null }, ANIMATION_FAST_MILLIS
+                        )
                     }, ANIMATION_SLOW_MILLIS)
                 }
             }
         }
 
-       camera_switch_button?.let {
+        camera_switch_button?.let {
             it.isEnabled = false
             it.setOnClickListener {
                 lensFacing = if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
@@ -329,8 +318,10 @@ class CameraFragment : Fragment() {
             if (true == outputDirectory.listFiles()?.isNotEmpty()) {
                 Navigation.findNavController(
                     requireActivity(), R.id.nav_host_fragment
-                ).navigate(CameraFragmentDirections
-                    .actionCameraFragmentToGalleryFragment(outputDirectory.absolutePath))
+                ).navigate(
+                    CameraFragmentDirections
+                        .actionCameraFragmentToGalleryFragment(outputDirectory.absolutePath)
+                )
             }
         }
     }
@@ -358,7 +349,6 @@ class CameraFragment : Fragment() {
         private var lastAnalyzedTimestamp = 0L
         var framesPerSecond: Double = -1.0
             private set
-
 
         fun onFrameAnalyzed(listener: LumaListener) = listeners.add(listener)
 
@@ -400,7 +390,9 @@ class CameraFragment : Fragment() {
         private const val RATIO_16_9_VALUE = 16.0 / 9.0
 
         private fun createFile(baseFolder: File, format: String, extension: String) =
-            File(baseFolder, SimpleDateFormat(format, Locale.US)
-                .format(System.currentTimeMillis()) + extension)
+            File(
+                baseFolder, SimpleDateFormat(format, Locale.US)
+                    .format(System.currentTimeMillis()) + extension
+            )
     }
 }

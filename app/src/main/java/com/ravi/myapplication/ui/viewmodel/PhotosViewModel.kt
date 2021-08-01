@@ -5,11 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.ravi.myapplication.ui.Database.ImageEntity
 import com.ravi.myapplication.ui.repository.PhotosRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class PhotosViewModel @Inject constructor(
     val repository: PhotosRepository
 ) : ViewModel() {

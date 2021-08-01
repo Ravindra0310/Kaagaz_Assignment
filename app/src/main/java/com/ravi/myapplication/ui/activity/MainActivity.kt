@@ -8,11 +8,14 @@ import android.util.Log
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ravi.myapplication.R
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 const val KEY_EVENT_ACTION = "key_event_action"
 const val KEY_EVENT_EXTRA = "key_event_extra"
 private const val IMMERSIVE_FLAG_TIMEOUT = 500L
+
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity() {
                 for (i in 0 until files.size) {
                     Log.d("Files", "FileName:" + files[i].name)
                 }
+
                 var photo=files[0].listFiles()
                 for (i in 0 until photo.size) {
                     Log.d("photo", "FileName:" + photo[i].name)
