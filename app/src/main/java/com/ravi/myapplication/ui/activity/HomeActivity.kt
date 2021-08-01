@@ -34,6 +34,11 @@ class HomeActivity : AppCompatActivity() ,OnClickListener{
         CameraPermission()
         setRecyclerView()
         setAlbumList()
+        floatingActionCameraButton.setOnClickListener {
+            lifecycleScope.launchWhenStarted {
+                startActivity(Intent(this@HomeActivity, MainActivity::class.java))
+            }
+        }
     }
 
     private fun setAlbumList() {
@@ -55,11 +60,7 @@ class HomeActivity : AppCompatActivity() ,OnClickListener{
             // Request camera-related permissions
             requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
         } else {
-            floatingActionCameraButton.setOnClickListener {
-                lifecycleScope.launchWhenStarted {
-                    startActivity(Intent(this@HomeActivity, MainActivity::class.java))
-                }
-            }
+
         }
     }
 

@@ -22,6 +22,9 @@ class AlbumImageActivity : AppCompatActivity() {
         setContentView(R.layout.activity_album_image)
         getFilePath()
         setRecyclerView()
+        back_buttonFromImage.setOnClickListener {
+            finish()
+        }
 
     }
 

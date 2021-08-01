@@ -145,6 +145,8 @@ class CameraFragment : Fragment() {
         }
     }
 
+
+
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -395,4 +397,6 @@ class CameraFragment : Fragment() {
                     .format(System.currentTimeMillis()) + extension
             )
     }
+
+
 }
